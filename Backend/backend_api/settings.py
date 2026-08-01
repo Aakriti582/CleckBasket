@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'products',
     'traders',
     'rest_framework_simplejwt.token_blacklist',
+    'django_filters',
+    'support',
+
 
 ]
 CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
@@ -81,12 +84,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend_api.wsgi.application'
 
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'products.pagination.StandardPagination',
 }
+
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
@@ -165,3 +172,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL='accounts.User'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+ADMINS = [('Admin', 'admin@cleckbasket.com')]
