@@ -1,11 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthStore } from "../store/authStore";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 export default function ProtectedRoute({ allowedRoles }) {
-  const { user, accessToken } = useAuthStore();
+  const { data: user, isLoading, isError } = useCurrentUser();
 
-  if (!accessToken) return <Navigate to="/login" replace />;
-  if (allowedRoles && !allowedRoles.includes(user?.role))
+  if (isLoading) return null;
+  if (isError || !user) return <Navigate to="/login" replace />;
+  if (allowedRoles && !allowedRoles.includes(user.role))
     return <Navigate to="/" replace />;
 
   return <Outlet />;

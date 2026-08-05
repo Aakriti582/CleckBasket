@@ -1,13 +1,21 @@
 import axios from "axios";
-import { useAuthStore } from "../store/authStore";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
 });
 
+function getCsrfToken() {
+  const match = document.cookie.match(/csrftoken=([^;]+)/);
+  return match ? match[1] : null;
+}
+
 api.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().accessToken;
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  const method = config.method?.toUpperCase();
+  if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
+    const token = getCsrfToken();
+    if (token) config.headers["X-CSRFToken"] = token;
+  }
   return config;
 });
 
@@ -15,20 +23,14 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config;
-    const { refreshToken, setAccessToken, logout } = useAuthStore.getState();
+    const isRefreshCall = original.url?.includes("/auth/token/refresh/");
 
-    if (error.response?.status === 401 && refreshToken && !original._retry) {
+    if (error.response?.status === 401 && !original._retry && !isRefreshCall) {
       original._retry = true;
       try {
-        const { data } = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}/auth/token/refresh/`,
-          { refresh: refreshToken }
-        );
-        setAccessToken(data.access);
-        original.headers.Authorization = `Bearer ${data.access}`;
+        await api.post("/auth/token/refresh/");
         return api(original);
       } catch {
-        logout();
         window.location.href = "/login";
       }
     }

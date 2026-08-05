@@ -20,7 +20,7 @@ const roleHome = {
 
 export default function Login() {
   const navigate = useNavigate();
-  const setAuth = useAuthStore((s) => s.setAuth);
+  const setUser = useAuthStore((s) => s.setUser);
   const [serverError, setServerError] = useState("");
 
   const {
@@ -29,14 +29,15 @@ export default function Login() {
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(schema) });
 
+
   const onSubmit = async (values) => {
-    setServerError("");
-    try {
-      const { data } = await loginUser(values);
-      setAuth(data);
-      navigate(roleHome[data.user.role] ?? "/");
-    } catch (err) {
-      setServerError(
+  setServerError("");
+  try {
+    const { data } = await loginUser(values);
+    setUser(data.user);
+    navigate(roleHome[data.user.role] ?? "/");
+  } catch (err) {
+    setServerError(
         err.response?.data?.detail ?? "Login failed. Please try again."
       );
     }

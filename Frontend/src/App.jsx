@@ -10,6 +10,10 @@ import Shop from "./pages/customer/Shop";
 import About from "./pages/customer/About";
 import Contact from "./pages/customer/Contact";
 
+import ProductDetails from "./pages/customer/ProductDetails";
+
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -18,6 +22,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<CustomerRegister />} />
         <Route path="/register/trader" element={<TraderRegister />} />
+        <Route path="/product/:slug" element={<ProductDetails />} />
 
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />

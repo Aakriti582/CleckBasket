@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Search, ShoppingCart, Bell, Heart, User, Menu } from "lucide-react";
 import { useState } from "react";
 import { useAuthStore } from "../../store/authStore";
+import { logoutUser } from "../../api/endpoints/auth";
 
 
 const navLinkClass = ({ isActive }) =>
@@ -20,10 +21,12 @@ export default function Navbar() {
     if (search.trim()) navigate(`/shop?search=${encodeURIComponent(search)}`);
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
+  
+  const handleLogout = async () => {
+  await logoutUser();
+  logout();
+  navigate("/login");
+};
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
